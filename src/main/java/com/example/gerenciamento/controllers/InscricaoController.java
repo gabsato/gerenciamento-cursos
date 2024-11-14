@@ -33,6 +33,7 @@ public class InscricaoController {
     @Autowired
     private InscricaoPopulator inscricaoPopulator;
 
+    //Método para inscrição dos alunos
     @PostMapping
     public Inscricao inscreverAluno(@RequestBody InscricaoRequest inscricaoRequest){
         Long alunoId = inscricaoRequest.getAlunoId();
@@ -46,12 +47,14 @@ public class InscricaoController {
         return inscricaoRepository.save(inscricao);
     }
 
+    //Lista de cursos do aluno
     @GetMapping("/aluno/{alunoId}")
     public List<CursoDTO> listaInscricoesPorAluno(@PathVariable Long alunoId) {
         Aluno aluno = alunoRepository.findById(alunoId).orElseThrow(() -> new RuntimeException("O aluno não foi encontrado"));
         List<Inscricao> inscricoes = inscricaoRepository.findByAluno(aluno);
         return inscricoes.stream().map(inscricao -> inscricaoPopulator.converterCursoDTO(inscricao.getCurso())).collect(Collectors.toList()); }
 
+    //Lista de alunos no curso
     @GetMapping("/curso/{cursoId}")
     public List<AlunoDTO> listaInscricoesPorCurso(@PathVariable Long cursoId) {
         Curso curso = cursoRepository.findById(cursoId).orElseThrow(() -> new RuntimeException("Curso não foi encontrado"));

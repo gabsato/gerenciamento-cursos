@@ -19,6 +19,7 @@ public class CursoController {
     @Autowired
     private InscricaoPopulator inscricaoPopulator;
 
+    //Criação de cursos em lista
     @PostMapping
     public List<CursoDTO> criarCurso(@RequestBody List<Curso> curso){
         List<Curso> cursoCriado = cursoRepository.saveAll(curso);
