@@ -1,9 +1,12 @@
 package com.example.gerenciamento.controllers;
 
+import com.example.gerenciamento.dto.AlunoDTO;
+import com.example.gerenciamento.dto.CursoDTO;
 import com.example.gerenciamento.dto.InscricaoRequest;
 import com.example.gerenciamento.entities.Aluno;
 import com.example.gerenciamento.entities.Curso;
 import com.example.gerenciamento.entities.Inscricao;
+import com.example.gerenciamento.populator.InscricaoPopulator;
 import com.example.gerenciamento.repositories.AlunoRepository;
 import com.example.gerenciamento.repositories.CursoRepository;
 import com.example.gerenciamento.repositories.InscricaoRepository;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/inscricao")
@@ -25,6 +29,9 @@ public class InscricaoController {
 
     @Autowired
     private CursoRepository cursoRepository;
+
+    @Autowired
+    private InscricaoPopulator inscricaoPopulator;
 
     @PostMapping
     public Inscricao inscreverAluno(@RequestBody InscricaoRequest inscricaoRequest){
@@ -40,15 +47,15 @@ public class InscricaoController {
     }
 
     @GetMapping("/aluno/{alunoId}")
-    public List<Inscricao> listaInscricoesPorAluno(@PathVariable Long alunoId){
-        Aluno aluno = alunoRepository.findById(alunoId).orElseThrow(()-> new RuntimeException("O aluno não foi encontrado"));
-        return inscricaoRepository.findByAluno(aluno);
-    }
+    public List<CursoDTO> listaInscricoesPorAluno(@PathVariable Long alunoId) {
+        Aluno aluno = alunoRepository.findById(alunoId).orElseThrow(() -> new RuntimeException("O aluno não foi encontrado"));
+        List<Inscricao> inscricoes = inscricaoRepository.findByAluno(aluno);
+        return inscricoes.stream().map(inscricao -> inscricaoPopulator.converterCursoDTO(inscricao.getCurso())).collect(Collectors.toList()); }
 
     @GetMapping("/curso/{cursoId}")
-    public List<Inscricao> listaInscricoesPorCurso(@PathVariable Long cursoId){
-        Curso curso = cursoRepository.findById(cursoId).orElseThrow(() -> new RuntimeException("O curso não foi encontrado"));
-        return inscricaoRepository.findByCurso(curso);
+    public List<AlunoDTO> listaInscricoesPorCurso(@PathVariable Long cursoId) {
+        Curso curso = cursoRepository.findById(cursoId).orElseThrow(() -> new RuntimeException("Curso não foi encontrado"));
+        List<Inscricao> inscricoes = inscricaoRepository.findByCurso(curso);
+        return inscricoes.stream().map(inscricao -> inscricaoPopulator.converterAlunoDTO(inscricao.getAluno())).collect(Collectors.toList());
     }
-
 }

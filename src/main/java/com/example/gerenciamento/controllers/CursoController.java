@@ -20,9 +20,9 @@ public class CursoController {
     private InscricaoPopulator inscricaoPopulator;
 
     @PostMapping
-    public CursoDTO criarCurso(@RequestBody Curso curso){
-        Curso cursoCriado = cursoRepository.save(curso);
-        return inscricaoPopulator.converterCursoDTO(cursoCriado);
+    public List<CursoDTO> criarCurso(@RequestBody List<Curso> curso){
+        List<Curso> cursoCriado = cursoRepository.saveAll(curso);
+        return cursoCriado.stream().map(inscricaoPopulator::converterCursoDTO).collect(Collectors.toList());
     }
 
     @GetMapping

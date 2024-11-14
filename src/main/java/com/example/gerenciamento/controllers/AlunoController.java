@@ -20,9 +20,9 @@ public class AlunoController {
     private InscricaoPopulator inscricaoPopulator;
 
     @PostMapping
-    public AlunoDTO criarAluno(@RequestBody Aluno aluno){
-        Aluno alunoCriado = alunoRepository.save(aluno);
-        return inscricaoPopulator.converterAlunoDTO(alunoCriado);
+    public List<AlunoDTO> criarAluno(@RequestBody List<Aluno> aluno){
+        List<Aluno> alunoCriado = alunoRepository.saveAll(aluno);
+        return alunoCriado.stream().map(inscricaoPopulator::converterAlunoDTO).collect(Collectors.toList());
     }
 
     @GetMapping
